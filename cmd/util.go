@@ -32,6 +32,6 @@ func promptIfEmpty(value, prompt string, isPassword bool) (string, error) {
 }
 
 func pwkExists() bool {
-	_, err := os.Stat(".pwk")
+	_, err := os.Stat(pwfile)
 	return !os.IsNotExist(err)
 }

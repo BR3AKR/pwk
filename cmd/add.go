@@ -15,6 +15,8 @@
 package cmd
 
 import (
+	"fmt"
+
 	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
 )
@@ -33,13 +35,14 @@ Add creates a new enty in your list of passwords`,
 
 		var creds []credmgr.Credential
 
+		fmt.Printf("Deserializing: %s", pwfile)
 		if pwkExists() {
-			creds, _ = credmgr.DeserializeData(".pwk", password)
+			creds, _ = credmgr.DeserializeData(pwfile, password)
 		}
 
 		cred := credmgr.Credential{Id: id, Location: location, User: user, Password: locPassword, Notes: notes}
 		creds = append(creds, cred)
-		credmgr.SerializeData(creds, ".pwk", password)
+		credmgr.SerializeData(creds, pwfile, password)
 	},
 }
 

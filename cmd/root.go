@@ -16,7 +16,9 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 	"os"
+	osuser "os/user"
 
 	"github.com/spf13/cobra"
 )
@@ -28,6 +30,7 @@ var user string
 var password string
 var locPassword string
 var notes string
+var pwfile string
 
 // rootCmd represents the base command when called without any subcommands
 var rootCmd = &cobra.Command{
@@ -50,5 +53,9 @@ func Execute() {
 }
 
 func init() {
-
+	usr, err := osuser.Current()
+	if err != nil {
+		log.Fatal(err)
+	}
+	pwfile = usr.HomeDir + "/.pwk"
 }

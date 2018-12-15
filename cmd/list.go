@@ -32,12 +32,12 @@ var listCmd = &cobra.Command{
 List displays all of your currently saved passwords in a table.`,
 	Run: func(cmd *cobra.Command, args []string) {
 		if !pwkExists() {
-			fmt.Println("No .pwk could be found. Please execute the add command to initialize")
+			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
 			return
 		}
 		password, _ = promptIfEmpty(password, "Password: ", true)
 
-		creds, _ := credmgr.DeserializeData(".pwk", password)
+		creds, _ := credmgr.DeserializeData(pwfile, password)
 
 		var display string
 

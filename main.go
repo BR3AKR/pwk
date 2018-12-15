@@ -19,16 +19,9 @@ import "github.com/BR3AKR/pwk/cmd"
 // TODO Read effective go, take advice
 // TODO Add Unit Tests
 // TODO Add go doc
-// TODO Implement command line library
-// TODO Implement operations
-//      Create
-//      Read
-//      Update
-//      Delete
-// TODO Implement GET to clipboard
-// TODO Implement INIT - creates password encoded file, creates unique SALT
 // TODO Learn how to add to package manager (pacman -S pwkeeper)
 // TODO Learn how to create windows installer
+// TODO Randomize SALT
 func main() {
 	cmd.Execute()
 }

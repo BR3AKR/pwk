@@ -29,12 +29,12 @@ Updates an entry out of your password file by id.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
 		if !pwkExists() {
-			fmt.Println("No .pwk could be found. Please execute the add command to initialize")
+			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
 			return
 		}
 		password, _ = promptIfEmpty(password, "Password: ", true)
 
-		creds, _ := credmgr.DeserializeData(".pwk", password)
+		creds, _ := credmgr.DeserializeData(pwfile, password)
 
 		for i := range creds {
 			if creds[i].Id == args[0] {
@@ -56,7 +56,7 @@ Updates an entry out of your password file by id.`,
 				break
 			}
 		}
-		credmgr.SerializeData(creds, ".pwk", password)
+		credmgr.SerializeData(creds, pwfile, password)
 	},
 }
 
