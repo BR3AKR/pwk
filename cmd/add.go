@@ -35,7 +35,6 @@ Add creates a new enty in your list of passwords`,
 
 		var creds []credmgr.Credential
 
-		fmt.Printf("Deserializing: %s", pwfile)
 		if pwkExists() {
 			creds, _ = credmgr.DeserializeData(pwfile, password)
 		}
