@@ -15,8 +15,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
 )

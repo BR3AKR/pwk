@@ -34,12 +34,12 @@ sure to clear your clipboard after using this command.`,
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
 		if !pwkExists() {
-			fmt.Println("No .pwk could be found. Please execute the add command to initialize")
+			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
 			return
 		}
 		password, _ = promptIfEmpty(password, "Password: ", true)
 
-		creds, _ := credmgr.DeserializeData(".pwk", password)
+		creds, _ := credmgr.DeserializeData(pwfile, password)
 
 		var pass string
 		for _, cred := range creds {
