@@ -19,6 +19,7 @@ import (
 	"log"
 	"os"
 	osuser "os/user"
+	"path/filepath"
 
 	"github.com/spf13/cobra"
 )
@@ -36,10 +37,10 @@ var pwfile string
 var rootCmd = &cobra.Command{
 	Use:   "pwk",
 	Short: "A command line password manager",
-	Long: `Password Keeper (pwk) is a CLI password manager    
-written in Go with the intention of being fast, 
+	Long: `Password Keeper (pwk) is a CLI password manager
+written in Go with the intention of being fast,
 and simple to use. Passwords are stored in a
-password encrypted file using modern hashing and 
+password encrypted file using modern hashing and
 a modern encryption algorithm.`,
 }
 
@@ -53,9 +54,49 @@ func Execute() {
 }
 
 func init() {
-	usr, err := osuser.Current()
+	var err error
+	pwfile, err = getConfig()
 	if err != nil {
 		log.Fatal(err)
 	}
-	pwfile = usr.HomeDir + "/.pwk"
+}
+
+func getConfig() (string, error) {
+	usr, err := osuser.Current()
+	if err != nil {
+		return "", err
+	}
+	var file = usr.HomeDir + "/.pwk"
+	exists, err := fileExists(file)
+	if err != nil {
+		return "", err
+	} else if exists {
+		return file, nil
+	}
+
+	file, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	if err != nil {
+		return "", err
+	}
+	file += "/.pwk"
+
+	exists, err = fileExists(file)
+	if err != nil {
+		return "", err
+	} else if exists {
+		return file, nil
+	}
+
+	file = usr.HomeDir + "/.pwk"
+	return file, nil
+}
+
+func fileExists(file string) (bool, error) {
+	if _, err := os.Stat(file); !os.IsNotExist(err) {
+		if err != nil {
+			return false, err
+		}
+		return true, nil
+	}
+	return false, nil
 }
