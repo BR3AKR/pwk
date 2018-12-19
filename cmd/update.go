@@ -44,7 +44,7 @@ Updates an entry out of your password file by id.`,
 				if cmd.Flag("user").Changed {
 					creds[i].User = user
 				}
-				if cmd.Flag("locPassword").Changed {
+				if cmd.Flag("password").Changed {
 					creds[i].Password = locPassword
 				}
 				if cmd.Flag("notes").Changed {
