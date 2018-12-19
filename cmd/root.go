@@ -81,7 +81,6 @@ func getConfig() (string, error) {
 
 	file = filepath.Dir(file)
 	file += "/.pwk"
-	log.Printf("Checking %s", file)
 
 	exists, err = fileExists(file)
 	if err != nil {
