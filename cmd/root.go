@@ -74,11 +74,14 @@ func getConfig() (string, error) {
 		return file, nil
 	}
 
-	file, err = filepath.Abs(filepath.Dir(os.Args[0]))
+	file, err = os.Executable()
 	if err != nil {
 		return "", err
 	}
+
+	file = filepath.Dir(file)
 	file += "/.pwk"
+	log.Printf("Checking %s", file)
 
 	exists, err = fileExists(file)
 	if err != nil {
@@ -86,6 +89,7 @@ func getConfig() (string, error) {
 	} else if exists {
 		return file, nil
 	}
+	log.Printf("Not found")
 
 	file = usr.HomeDir + "/.pwk"
 	return file, nil
