@@ -16,12 +16,15 @@ package cmd
 
 import (
 	"fmt"
+	"log"
 
+	table "github.com/BR3AKR/cli-table"
 	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
 )
 
 var show bool
+var hideHeaders bool
 
 // listCmd represents the list command
 var listCmd = &cobra.Command{
@@ -37,26 +40,58 @@ List displays all of your currently saved passwords in a table.`,
 		}
 		password, _ = promptIfEmpty(password, "Password: ", true)
 
-		creds, _ := credmgr.DeserializeData(pwfile, password)
+		creds, err := credmgr.DeserializeData(pwfile, password)
 
-		var display string
-
-		if show {
-			display = "Id: %s, Loc: %s, User: %s, Pass: %s, Notes: %s\n"
+		if err != nil {
+			log.Fatal(err)
 		} else {
-			display = "Id: %s, Loc: %s, User: %s, Pass: ********, Notes: %s\n"
-		}
-		for _, cred := range creds {
-			if show {
-				fmt.Printf(display, cred.Id, cred.Location, cred.User, cred.Password, cred.Notes)
+			if hideHeaders {
+				printCreds(creds)
 			} else {
-				fmt.Printf(display, cred.Id, cred.Location, cred.User, cred.Notes)
+				printCredsWithHeader(creds)
 			}
 		}
 	},
 }
 
+func printCreds(creds []credmgr.Credential) {
+	data := make([][]string, len(creds))
+
+	for i, cred := range creds {
+		data[i] = *makeRow(cred.Id, cred.Location, cred.User, cred.Password, cred.Notes, show)
+	}
+
+	table.Print(&data, false)
+}
+
+func printCredsWithHeader(creds []credmgr.Credential) {
+	data := make([][]string, len(creds)+1)
+
+	data[0] = *makeRow("Id", "Location", "User", "Password", "Notes", true)
+
+	for i, cred := range creds {
+		data[i+1] = *makeRow(cred.Id, cred.Location, cred.User, cred.Password, cred.Notes, show)
+	}
+
+	table.Print(&data, true)
+}
+
+func makeRow(id, location, user, password, notes string, showPassword bool) *[]string {
+	row := make([]string, 5)
+	row[0] = id
+	row[1] = location
+	row[2] = user
+	if showPassword {
+		row[3] = password
+	} else {
+		row[3] = "********"
+	}
+	row[4] = notes
+	return &row
+}
+
 func init() {
 	rootCmd.AddCommand(listCmd)
 	listCmd.Flags().BoolVarP(&show, "show", "s", false, "Display passwords in the results of list")
+	listCmd.Flags().BoolVarP(&hideHeaders, "hideHeaders", "i", false, "Hide the headers")
 }
