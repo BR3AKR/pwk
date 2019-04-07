@@ -15,8 +15,6 @@
 package cmd
 
 import (
-	"fmt"
-
 	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
 )
@@ -28,14 +26,6 @@ var updateCmd = &cobra.Command{
 Updates an entry out of your password file by id.`,
 	Args: cobra.MinimumNArgs(1),
 	Run: func(cmd *cobra.Command, args []string) {
-		if !pwkExists() {
-			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
-			return
-		}
-		password, _ = promptIfEmpty(password, "Password: ", true)
-
-		creds, _ := credmgr.DeserializeData(pwfile, password)
-
 		for i := range creds {
 			if creds[i].Id == args[0] {
 				if cmd.Flag("location").Changed {

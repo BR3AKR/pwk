@@ -19,20 +19,20 @@ func CreateHash(password string) ([]byte, error) {
 	return dk, err
 }
 
-func Encrypt(data []byte, hash []byte) []byte {
+func Encrypt(data []byte, hash []byte) ([]byte, error) {
 	block, err := aes.NewCipher(hash)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 	gcm, err := cipher.NewGCM(block)
 	if err != nil {
-		panic(err.Error())
+		return nil, err
 	}
 	nonce := make([]byte, gcm.NonceSize())
 	if _, err = io.ReadFull(rand.Reader, nonce); err != nil {
-		panic(err.Error())
+		return nil, err
 	}
-	return gcm.Seal(nonce, nonce, data, nil)
+	return gcm.Seal(nonce, nonce, data, nil), nil
 }
 
 func Decrypt(data []byte, hash []byte) ([]byte, error) {
@@ -53,13 +53,24 @@ func Decrypt(data []byte, hash []byte) ([]byte, error) {
 	return plaintext, nil
 }
 
-func EncryptFile(filename string, data []byte, hash []byte) {
-	f, _ := os.Create(filename)
+func EncryptFile(filename string, data []byte, hash []byte) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
-	f.Write(Encrypt(data, hash))
+	data, err = Encrypt(data, hash)
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(data)
+	return err
 }
 
 func DecryptFile(filename string, hash []byte) ([]byte, error) {
-	data, _ := ioutil.ReadFile(filename)
+	data, err := ioutil.ReadFile(filename)
+	if err != nil {
+		return nil, err
+	}
 	return Decrypt(data, hash)
 }

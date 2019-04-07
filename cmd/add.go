@@ -26,16 +26,12 @@ var addCmd = &cobra.Command{
 	Long: `
 Add creates a new enty in your list of passwords`,
 	Run: func(cmd *cobra.Command, args []string) {
-		password, _ = promptIfEmpty(password, "Password: ", true)
 		id, _ = promptIfEmpty(id, "Id: ", false)
+		location, _ = promptIfEmpty(location, "Location: ", false)
 		user, _ = promptIfEmpty(user, "User: ", false)
+		// TODO generate a random password if none is supplied
 		locPassword, _ = promptIfEmpty(locPassword, "Location Password: ", true)
-
-		var creds []credmgr.Credential
-
-		if pwkExists() {
-			creds, _ = credmgr.DeserializeData(pwfile, password)
-		}
+		notes, _ = promptIfEmpty(notes, "Notes: ", false)
 
 		cred := credmgr.Credential{Id: id, Location: location, User: user, Password: locPassword, Notes: notes}
 		creds = append(creds, cred)

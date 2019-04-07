@@ -19,12 +19,12 @@ import (
 	"log"
 	"os"
 	osuser "os/user"
-	"path/filepath"
 
+	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
 )
 
-var cfgFile string
+var creds []credmgr.Credential
 var location string
 var id string
 var user string
@@ -55,51 +55,34 @@ func Execute() {
 
 func init() {
 	var err error
-	pwfile, err = getConfig()
+	password, err = prompt("Password: ", true)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error prompting for password: %v", err)
+	}
+
+	pwfile, err = getPwkFile()
+	pwfExists := !os.IsNotExist(err)
+
+	if err != nil && pwfExists {
+		log.Fatalf("error finding .pwk: %v", err)
+	}
+
+	if pwfExists {
+		creds, err = credmgr.DeserializeData(pwfile, password)
+		if err != nil {
+			log.Fatalf("error deserializing password file: %v", err)
+		}
 	}
 }
 
-func getConfig() (string, error) {
+func getPwkFile() (string, error) {
 	usr, err := osuser.Current()
 	if err != nil {
 		return "", err
 	}
-	var file = usr.HomeDir + "/.pwk"
-	exists, err := fileExists(file)
-	if err != nil {
-		return "", err
-	} else if exists {
-		return file, nil
-	}
 
-	file, err = os.Executable()
-	if err != nil {
-		return "", err
-	}
+	file := usr.HomeDir + "/.pwk"
+	_, err = os.Stat(file)
 
-	file = filepath.Dir(file)
-	file += "/.pwk"
-
-	exists, err = fileExists(file)
-	if err != nil {
-		return "", err
-	} else if exists {
-		return file, nil
-	}
-	log.Printf("Not found")
-
-	file = usr.HomeDir + "/.pwk"
-	return file, nil
-}
-
-func fileExists(file string) (bool, error) {
-	if _, err := os.Stat(file); !os.IsNotExist(err) {
-		if err != nil {
-			return false, err
-		}
-		return true, nil
-	}
-	return false, nil
+	return file, err
 }

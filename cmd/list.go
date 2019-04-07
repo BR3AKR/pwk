@@ -15,9 +15,6 @@
 package cmd
 
 import (
-	"fmt"
-	"log"
-
 	table "github.com/BR3AKR/cli-table"
 	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/spf13/cobra"
@@ -34,22 +31,10 @@ var listCmd = &cobra.Command{
 	Long: `
 List displays all of your currently saved passwords in a table.`,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !pwkExists() {
-			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
-			return
-		}
-		password, _ = promptIfEmpty(password, "Password: ", true)
-
-		creds, err := credmgr.DeserializeData(pwfile, password)
-
-		if err != nil {
-			log.Fatal(err)
+		if hideHeaders {
+			printCreds(creds)
 		} else {
-			if hideHeaders {
-				printCreds(creds)
-			} else {
-				printCredsWithHeader(creds)
-			}
+			printCredsWithHeader(creds)
 		}
 	},
 }

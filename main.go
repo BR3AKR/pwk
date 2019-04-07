@@ -1,4 +1,4 @@
-// Copyright © 2018 NAME HERE <EMAIL ADDRESS>
+// Copyright © 2018 Sean K Smith ssmith2347@gmail.com
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -14,7 +14,12 @@
 
 package main
 
-import "github.com/BR3AKR/pwk/cmd"
+import (
+	"fmt"
+	"os"
+
+	"github.com/BR3AKR/pwk/cmd"
+)
 
 // TODO Read effective go, take advice
 // TODO Add Unit Tests
@@ -23,5 +28,6 @@ import "github.com/BR3AKR/pwk/cmd"
 // TODO Learn how to create windows installer
 // TODO Randomize SALT
 func main() {
+	fmt.Println(os.Getenv("SOMEOTHERENVVAR"))
 	cmd.Execute()
 }

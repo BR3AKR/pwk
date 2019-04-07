@@ -12,11 +12,22 @@ type SerializeEncryptionWriter struct {
 	Data []byte
 }
 
-func (s SerializeEncryptionWriter) WriteToFile(filename string, password string) {
-	f, _ := os.Create(filename)
+func (s SerializeEncryptionWriter) WriteToFile(filename string, password string) error {
+	f, err := os.Create(filename)
+	if err != nil {
+		return err
+	}
 	defer f.Close()
-	hash, _ := cryptor.CreateHash(password)
-	f.Write(cryptor.Encrypt(s.Data, hash))
+	hash, err := cryptor.CreateHash(password)
+	if err != nil {
+		return err
+	}
+	data, err := cryptor.Encrypt(s.Data, hash)
+	if err != nil {
+		return err
+	}
+	_, err = f.Write(data)
+	return err
 }
 
 func (s *SerializeEncryptionWriter) Write(p []byte) (n int, err error) {
@@ -43,10 +54,10 @@ func (s *SerializeEncryptionReader) ReadByte() (byte, error) {
 
 func DeserializeData(filename, password string) ([]Credential, error) {
 	hash, err := cryptor.CreateHash(password)
+	if err != nil {
+		return nil, err
+	}
 	data, err := cryptor.DecryptFile(filename, hash)
-	// TODO Obviously need much better error handling here
-	// Honestly, the whole thing needs revisited for better error handling
-	// I was just trying to get this thing working first :)
 	if err != nil {
 		return nil, err
 	}

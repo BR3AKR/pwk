@@ -15,9 +15,6 @@
 package cmd
 
 import (
-	"fmt"
-
-	"github.com/BR3AKR/pwk/credmgr"
 	"github.com/atotto/clipboard"
 	"github.com/spf13/cobra"
 )
@@ -33,14 +30,6 @@ sure to clear your clipboard after using this command.`,
 	Args:                  cobra.MinimumNArgs(1),
 	DisableFlagsInUseLine: true,
 	Run: func(cmd *cobra.Command, args []string) {
-		if !pwkExists() {
-			fmt.Printf("No password file could be found (%s). Please execute the add command to initialize.\n", pwfile)
-			return
-		}
-		password, _ = promptIfEmpty(password, "Password: ", true)
-
-		creds, _ := credmgr.DeserializeData(pwfile, password)
-
 		var pass string
 		for _, cred := range creds {
 			if cred.Id == args[0] {
